@@ -1,0 +1,216 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    ViewData["Title"] = "Employees Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Management</title>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.common-bootstrap.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.bootstrap.min.css" />
+</head>
+<body>
+    <div class="col-md-12">
+        <div id="example">
+            <div class="demo-section">
+                <div id="validation-success"></div>
+
+                <form id="exampleForm"></form>
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    var validationSuccess = $("#validation-success");
+
+                    $("#exampleForm").kendoForm({
+                        formData: {
+                            EmpName: "Johny",
+                            Address: "USA",
+                            Department: "IT",
+                            DateOfBirth: new Date(),
+                            Account: "Manager"
+                        },
+                        items: [{
+                            type: "group",
+                            label: "Registration Form",
+                            items: [
+                                { field: "EmpName", label: "EmpName:", validation: { required: true } },
+                                { field: "Address", label: "Address:", validation: { required: true } },
+                                { field: "Department", label: "Department:", validation: { required: true } },
+                                { field: "DateOfBirth", label: { text: "Date of birth:", optional: true } },
+                                { field: "Account", label: "Account:", validation: { required: true } },
+                            ]
+                        }],
+                        validateField: function (e) {
+                            validationSuccess.html("");
+                        },
+                        //submit: function (e) {
+                        //    e.preventDefault();
+                        //    validationSuccess.html("<div class='k-messagebox k-messagebox-success'>Form data is valid!</div>");
+                        //},
+                        submit: function (e) {
+                            e.preventDefault();
+                            var formData = form.toJSON();
+                            $.ajax({
+                                url: '/Employee/SaveEmployee',
+                                type: 'POST',
+                                data: formData,
+                                success: function (response) {
+                                    validationSuccess.html("<div class='k-messagebox k-messagebox-success'>Form data saved successfully!</div>");
+                                    form.clear();
+                                },
+                                error: function (xhr, status, error) {
+                                    validationSuccess.html("<div class='k-messagebox k-messagebox-error'>Error saving form data!</div>");
+                                }
+                            });
+                        },
+
+                        clear: function (ev) {
+                            validationSuccess.html("");
+                        }
+                    });
+
+                    var form = $("#exampleForm").data("kendoForm");
+
+                    $("#validate").click(function () {
+                        form.validate();
+                    });
+
+                    $("#clear").click(function () {
+                        form.clear();
+                    });
+
+
+                });
+            </script>
+        </div>
+
+
+
+
+
+        <div id="grid" class="mt-2"></div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.119/js/kendo.all.min.js"></script>
+    <script>
+        var people =
+            [{ EmpName: "Rutuja", Address: "Pune", Department: "IT", Account: "Analyst", DateOfBirth: "09/21/2000" },
+            { EmpName: "Dnyanada", Address: "Pune", Department: "Testing", Account: "Senior Analyst", DateOfBirth: "03/20/2001" },
+            { EmpName: "Pradhynesh", Address: "Yavatmal", Department: "HR", Account: "Consultant", DateOfBirth: "04/25/2000" },
+            { EmpName: "Tejas", Address: "Ahamdnagar", Department: "L&D", Account: "Consultant", DateOfBirth: "09/16/2000" }
+            ];
+        $(document).ready(function () {
+            $("#grid").kendoGrid({
+                dataSource: people,
+                //{
+                //    transport: {
+                //        read: "/Employee/GetAllEmployees"
+                //    },
+                //    schema: {
+                //        model: {
+                //            EmpId: "Id",
+                //            fields: {
+                //                EmpName: { type: "string" },
+                //                Address: { type: "string" },
+                //                Department: { type: "string" },
+                //                Account: { type: "string" }
+                //            }
+                //        }
+                //    },
+                //    pageSize: 10
+                //},
+                height: 550,
+                sortable: true,
+                pageable: true,
+                columns: [
+                    { field: "EmpName", title: "EmpName" },
+                    { field: "Address", title: "Address" },
+                    { field: "Department", title: "Department" },
+                    { field: "Account", title: "Account" },
+                    { field: "DateOfBirth", title: "DateOfBirth" },
+                ]
+            });
+        });
+
+        $(document).ready(function () {
+
+            var viewModel = kendo.observable({
+
+                EmpName: null,
+
+                Address: null,
+
+                Department: null,
+
+                Account: null,
+                DateOfBirth: null
+
+            })
+
+            kendo.bind($("#example"), viewModel);
+
+        });
+
+        function RegisterUser() {
+
+            $.ajax({
+
+                cache: false,
+
+                async: false,
+
+                type: "POST",
+
+                url: "http://localhost:64955/api/Employee",
+
+                data: {
+
+                    EmpName: $("#Empname").val(),
+
+                    Address: $("#Address").val(),
+
+                    Department: $("#Department").val(),
+
+                    Account: $("#Account").val(),
+                    DateOfBirth: $("#DateOfBirth").val()
+
+                },
+
+                success: function (data) {
+
+                    //alert(data);
+
+                    if (data == 'True') {
+
+                        ret = false;
+
+                        uploadWindow.close();
+
+                        window.location = SubmitURL;
+
+                    } else ret = true;
+
+                },
+
+                error: function (jqXHR, exception) {
+
+                    alert(errorHandling(jqXHR, exception));
+
+                }
+
+            });
+
+        }
+    </script>
+</body>
+</html>
